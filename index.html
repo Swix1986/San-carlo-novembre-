@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0B0F17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Novembre B2B" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Chiusura Novembre — Tracker Fatturato B2B</title>
+  <style>
+    :root {
+      --bg: #0B0F17;
+      --surface: #131926;
+      --surface-2: #1A2234;
+      --border: #27324A;
+      --text: #F1F5F9;
+      --muted: #94A3B8;
+      --accent: #38BDF8;
+      --green: #10B981;
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --tier-a: #F59E0B;
+      --tier-b: #38BDF8;
+      --tier-c: #A78BFA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 14px; max-width: 960px; margin: 0 auto; padding-bottom: 64px; }
+    header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+    .subtitle { font-size: 0.8rem; color: var(--muted); }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    button { cursor: pointer; border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.82rem; font-weight: 600; transition: 0.15s; }
+    .btn-primary { background: var(--accent); color: #05111D; }
+    .btn-outline { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: rgba(239,68,68,0.15); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.35); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .kpi-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-val { font-size: 1.3rem; font-weight: 800; }
+    .kpi-sub { font-size: 0.74rem; color: var(--muted); margin-top: 3px; }
+    .text-green { color: var(--green); }
+    .text-amber { color: var(--amber); }
+    .text-red { color: var(--red); }
+
+    .progress-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+    .progress-top { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; font-weight: 600; }
+    .progress-bar { height: 10px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); width: 0%; transition: width 0.25s; }
+
+    .extra-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+    .extra-box h2 { font-size: 0.9rem; margin-bottom: 10px; color: var(--accent); }
+    .extra-form { display: grid; grid-template-columns: 1fr 1.4fr 0.8fr 0.9fr auto; gap: 8px; }
+    @media (max-width: 640px) { .extra-form { grid-template-columns: 1fr 1fr; } .extra-form button { grid-column: span 2; } }
+    input, select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; width: 100%; }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+    .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+    .tab { background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 7px 13px; border-radius: 99px; font-size: 0.82rem; white-space: nowrap; }
+    .tab.active { background: var(--accent); color: #05111D; border-color: var(--accent); font-weight: 700; }
+
+    .day-banner { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.84rem; }
+
+    .client-list { display: flex; flex-direction: column; gap: 8px; }
+    .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 10px 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
+    .client-card.done { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.06); }
+    .badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; }
+    .badge-A { background: rgba(245,158,11,0.18); color: var(--tier-a); border: 1px solid rgba(245,158,11,0.4); }
+    .badge-B { background: rgba(56,189,248,0.18); color: var(--tier-b); border: 1px solid rgba(56,189,248,0.4); }
+    .badge-C { background: rgba(167,139,250,0.18); color: var(--tier-c); border: 1px solid rgba(167,139,250,0.4); }
+    .badge-EXTRA { background: rgba(16,185,129,0.2); color: var(--green); border: 1px solid rgba(16,185,129,0.45); font-size: 0.65rem; width: auto; padding: 0 6px; }
+
+    .c-name { font-weight: 700; font-size: 0.94rem; }
+    .c-meta { font-size: 0.77rem; color: var(--muted); margin-top: 2px; }
+    .dyn-tag { color: var(--amber); font-weight: 700; }
+    .dyn-tag.ok { color: var(--green); }
+
+    .c-actions { display: flex; align-items: center; gap: 8px; }
+    .amt-input { width: 92px; text-align: right; font-weight: 700; font-size: 0.92rem; }
+    .check-btn { width: 34px; height: 34px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .client-card.done .check-btn { background: var(--green); color: #04130D; border-color: var(--green); }
+    .del-extra { background: transparent; color: var(--red); padding: 4px 6px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Chiusura Novembre — Giro Clienti (64 Unici)</h1>
+      <div class="subtitle">Già fatturato: 8.871 € • Obiettivo residuo: 3.650 € • Target mese: 12.500 €</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn-outline" onclick="exportCSV()">Esporta CSV</button>
+      <button class="btn-danger" onclick="resetAll()">Azzera Dati</button>
+    </div>
+  </header>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Fatturato Inserito</div>
+      <div class="kpi-val text-green" id="kpiDone">0,00 €</div>
+      <div class="kpi-sub" id="kpiVisits">0 / 64 visite chiuse</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Residuo per 3.650 €</div>
+      <div class="kpi-val text-amber" id="kpiRem">3.650,00 €</div>
+      <div class="kpi-sub" id="kpiRemSub">Su 64 clienti rimanenti</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Totale Mese Stimato</div>
+      <div class="kpi-val" id="kpiMonth">12.551,00 €</div>
+      <div class="kpi-sub">8.871 € + giro residuo</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Scostamento vs Piano</div>
+      <div class="kpi-val" id="kpiVar">0,00 €</div>
+      <div class="kpi-sub">Spalmato sui successivi</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span>Avanzamento Obiettivo 3.650 €</span>
+      <span id="progPct">0.0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+
+  <div class="extra-box">
+    <h2>+ Aggiungi Visita Extra Giornaliera</h2>
+    <div class="extra-form">
+      <select id="exDay">
+        <option value="Martedì">Martedì</option>
+        <option value="Mercoledì">Mercoledì</option>
+        <option value="Giovedì">Giovedì</option>
+        <option value="Venerdì">Venerdì</option>
+        <option value="Sabato">Sabato</option>
+      </select>
+      <input type="text" id="exName" placeholder="Nome cliente extra..." />
+      <select id="exTier">
+        <option value="A">Fascia A (100€)</option>
+        <option value="B" selected>Fascia B (50€)</option>
+        <option value="C">Fascia C (25€)</option>
+      </select>
+      <input type="number" id="exAmt" placeholder="Importo €" step="0.01" min="0" />
+      <button class="btn-primary" onclick="addExtra()">Aggiungi</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="dayTabs"></div>
+  <div class="day-banner" id="dayBanner"></div>
+  <div class="client-list" id="clientList"></div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    const BASE_CLIENTS = [{"id": 1, "day": "Martedì", "tier": "A", "name": "Anemola", "min": 100, "target": 125}, {"id": 2, "day": "Martedì", "tier": "A", "name": "Melon", "min": 100, "target": 125}, {"id": 3, "day": "Martedì", "tier": "A", "name": "Gml", "min": 100, "target": 125}, {"id": 4, "day": "Martedì", "tier": "B", "name": "Calenda", "min": 50, "target": 70}, {"id": 5, "day": "Martedì", "tier": "B", "name": "Insomnia", "min": 50, "target": 70}, {"id": 6, "day": "Martedì", "tier": "B", "name": "Mastroianni", "min": 50, "target": 70}, {"id": 7, "day": "Martedì", "tier": "B", "name": "Insolito", "min": 50, "target": 70}, {"id": 8, "day": "Martedì", "tier": "B", "name": "Asd soccer", "min": 50, "target": 70}, {"id": 9, "day": "Martedì", "tier": "B", "name": "Sartal", "min": 50, "target": 70}, {"id": 10, "day": "Martedì", "tier": "B", "name": "Nice bar", "min": 50, "target": 70}, {"id": 11, "day": "Martedì", "tier": "B", "name": "Officina dei sapori", "min": 50, "target": 70}, {"id": 12, "day": "Martedì", "tier": "C", "name": "Mario russo", "min": 25, "target": 30}, {"id": 13, "day": "Martedì", "tier": "C", "name": "Arena di helas", "min": 25, "target": 30}, {"id": 14, "day": "Martedì", "tier": "C", "name": "Aurora", "min": 25, "target": 30}, {"id": 15, "day": "Martedì", "tier": "C", "name": "La nuova Caffetteria", "min": 25, "target": 30}, {"id": 16, "day": "Martedì", "tier": "C", "name": "De cristofaro", "min": 25, "target": 30}, {"id": 17, "day": "Mercoledì", "tier": "A", "name": "Tartaglione", "min": 100, "target": 125}, {"id": 18, "day": "Mercoledì", "tier": "A", "name": "Scialla", "min": 100, "target": 125}, {"id": 19, "day": "Mercoledì", "tier": "B", "name": "Circolo Dopo lavoro", "min": 50, "target": 70}, {"id": 20, "day": "Mercoledì", "tier": "B", "name": "Musone", "min": 50, "target": 70}, {"id": 21, "day": "Mercoledì", "tier": "B", "name": "Punto di ristoro", "min": 50, "target": 70}, {"id": 22, "day": "Mercoledì", "tier": "C", "name": "Perla del grano", "min": 25, "target": 30}, {"id": 23, "day": "Mercoledì", "tier": "C", "name": "Cieci", "min": 25, "target": 30}, {"id": 24, "day": "Mercoledì", "tier": "C", "name": "Antica caffetteria", "min": 25, "target": 30}, {"id": 25, "day": "Mercoledì", "tier": "C", "name": "Fermento", "min": 25, "target": 30}, {"id": 26, "day": "Mercoledì", "tier": "C", "name": "Elleffe", "min": 25, "target": 30}, {"id": 27, "day": "Mercoledì", "tier": "C", "name": "Coffe talk", "min": 25, "target": 30}, {"id": 28, "day": "Mercoledì", "tier": "C", "name": "Moretta", "min": 25, "target": 30}, {"id": 29, "day": "Mercoledì", "tier": "C", "name": "Bar k", "min": 25, "target": 30}, {"id": 30, "day": "Mercoledì", "tier": "C", "name": "Pizzicagnolo", "min": 25, "target": 30}, {"id": 31, "day": "Mercoledì", "tier": "C", "name": "Caffè primavera", "min": 25, "target": 30}, {"id": 32, "day": "Giovedì", "tier": "A", "name": "Di Giovanni frutteria", "min": 100, "target": 125}, {"id": 33, "day": "Giovedì", "tier": "B", "name": "Kore", "min": 50, "target": 70}, {"id": 34, "day": "Giovedì", "tier": "B", "name": "Di fuccia", "min": 50, "target": 70}, {"id": 35, "day": "Giovedì", "tier": "B", "name": "Erreggi", "min": 50, "target": 70}, {"id": 36, "day": "Giovedì", "tier": "B", "name": "Smoke shop", "min": 50, "target": 70}, {"id": 37, "day": "Giovedì", "tier": "C", "name": "Vistoso", "min": 25, "target": 30}, {"id": 38, "day": "Giovedì", "tier": "C", "name": "Agenziano Maria", "min": 25, "target": 30}, {"id": 39, "day": "Giovedì", "tier": "C", "name": "Oasi", "min": 25, "target": 30}, {"id": 40, "day": "Giovedì", "tier": "C", "name": "Primo caffe", "min": 25, "target": 30}, {"id": 41, "day": "Giovedì", "tier": "C", "name": "Garofalo", "min": 25, "target": 30}, {"id": 42, "day": "Venerdì", "tier": "A", "name": "Drink and more", "min": 100, "target": 125}, {"id": 43, "day": "Venerdì", "tier": "B", "name": "Marzia caffe", "min": 50, "target": 70}, {"id": 44, "day": "Venerdì", "tier": "B", "name": "La luna", "min": 50, "target": 70}, {"id": 45, "day": "Venerdì", "tier": "B", "name": "Munno nicola", "min": 50, "target": 70}, {"id": 46, "day": "Venerdì", "tier": "B", "name": "Old market", "min": 50, "target": 70}, {"id": 47, "day": "Venerdì", "tier": "B", "name": "Ambrosino", "min": 50, "target": 70}, {"id": 48, "day": "Venerdì", "tier": "B", "name": "Bar brule", "min": 50, "target": 70}, {"id": 49, "day": "Venerdì", "tier": "B", "name": "Coffe break", "min": 50, "target": 70}, {"id": 50, "day": "Venerdì", "tier": "B", "name": "Flii d amico", "min": 50, "target": 70}, {"id": 51, "day": "Venerdì", "tier": "C", "name": "Athena", "min": 25, "target": 30}, {"id": 52, "day": "Venerdì", "tier": "C", "name": "Fisio", "min": 25, "target": 30}, {"id": 53, "day": "Venerdì", "tier": "C", "name": "Le Bon", "min": 25, "target": 30}, {"id": 54, "day": "Venerdì", "tier": "C", "name": "Segreti e bugie", "min": 25, "target": 30}, {"id": 55, "day": "Venerdì", "tier": "C", "name": "Bar la rotonda", "min": 25, "target": 30}, {"id": 56, "day": "Venerdì", "tier": "C", "name": "La rinascita", "min": 25, "target": 30}, {"id": 57, "day": "Venerdì", "tier": "C", "name": "Marzano", "min": 25, "target": 30}, {"id": 58, "day": "Venerdì", "tier": "C", "name": "Borrozzino", "min": 25, "target": 30}, {"id": 59, "day": "Venerdì", "tier": "C", "name": "Tab di santo", "min": 25, "target": 30}, {"id": 60, "day": "Sabato", "tier": "A", "name": "Pimo", "min": 100, "target": 125}, {"id": 61, "day": "Sabato", "tier": "B", "name": "Maudit", "min": 50, "target": 70}, {"id": 62, "day": "Sabato", "tier": "B", "name": "Bar colors", "min": 50, "target": 70}, {"id": 63, "day": "Sabato", "tier": "C", "name": "Mogago", "min": 25, "target": 30}, {"id": 64, "day": "Sabato", "tier": "C", "name": "Fantasia dei dolci", "min": 25, "target": 30}];
+    const STORAGE_KEY = "nov_b2b_tracker_64_pwa_v1";
+    const ALREADY_BILLED = 8871;
+    const TARGET_GOAL = 3650;
+    const DAYS = ["Tutti", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+
+    let state = {
+      activeDay: "Tutti",
+      records: {},
+      extras: []
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function fmt(num) {
+      return num.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+
+    function getAllItems() {
+      const base = BASE_CLIENTS.map(c => {
+        const rec = state.records[c.id] || { done: false, actual: "" };
+        return { ...c, isExtra: false, done: !!rec.done, actual: rec.actual };
+      });
+      const ext = state.extras.map(e => ({
+        ...e,
+        isExtra: true,
+        done: true,
+        actual: parseFloat(e.actual) || 0
+      }));
+      return [...base, ...ext];
+    }
+
+    function computeDynamicPlan() {
+      const items = getAllItems();
+      let doneSum = 0;
+      let doneCount = 0;
+      let unvisitedBaseWeight = 0;
+      let unvisitedCount = 0;
+
+      items.forEach(item => {
+        if (item.done) {
+          const val = parseFloat(item.actual);
+          doneSum += isNaN(val) ? item.target : val;
+          doneCount++;
+        } else {
+          unvisitedBaseWeight += item.target;
+          unvisitedCount++;
+        }
+      });
+
+      const remainingNeeded = Math.max(0, TARGET_GOAL - doneSum);
+      const multiplier = unvisitedBaseWeight > 0 ? (remainingNeeded / unvisitedBaseWeight) : 0;
+
+      items.forEach(item => {
+        if (item.done) {
+          const val = parseFloat(item.actual);
+          item.effective = isNaN(val) ? item.target : val;
+          item.dynamicTarget = item.effective;
+        } else {
+          item.dynamicTarget = Math.round(item.target * multiplier * 100) / 100;
+          item.effective = item.dynamicTarget;
+        }
+      });
+
+      const projectedPeriod = doneSum + (unvisitedCount > 0 ? remainingNeeded : 0);
+      const variance = doneSum - items.filter(i => i.done && !i.isExtra).reduce((s, i) => s + i.target, 0);
+
+      return {
+        items,
+        doneSum,
+        doneCount,
+        totalCount: items.length,
+        remainingNeeded,
+        unvisitedCount,
+        projectedPeriod,
+        variance
+      };
+    }
+
+    function render() {
+      const plan = computeDynamicPlan();
+
+      document.getElementById("kpiDone").textContent = fmt(plan.doneSum);
+      document.getElementById("kpiVisits").textContent = `${plan.doneCount} / ${plan.totalCount} visite chiuse`;
+      document.getElementById("kpiRem").textContent = fmt(plan.remainingNeeded);
+      document.getElementById("kpiRemSub").textContent = plan.unvisitedCount > 0
+        ? `Spalmato su ${plan.unvisitedCount} clienti rimanenti`
+        : "Tutti i clienti visitati";
+      document.getElementById("kpiMonth").textContent = fmt(ALREADY_BILLED + plan.projectedPeriod);
+
+      const varEl = document.getElementById("kpiVar");
+      varEl.textContent = (plan.variance >= 0 ? "+" : "") + fmt(plan.variance);
+      varEl.className = "kpi-val " + (plan.variance >= 0 ? "text-green" : "text-red");
+
+      const pct = Math.min(100, (plan.doneSum / TARGET_GOAL) * 100);
+      document.getElementById("progPct").textContent = pct.toFixed(1) + "%";
+      document.getElementById("progFill").style.width = pct + "%";
+
+      const tabsEl = document.getElementById("dayTabs");
+      tabsEl.innerHTML = "";
+      DAYS.forEach(d => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (state.activeDay === d ? " active" : "");
+        btn.textContent = d;
+        btn.onclick = () => { state.activeDay = d; render(); };
+        tabsEl.appendChild(btn);
+      });
+
+      const filtered = state.activeDay === "Tutti"
+        ? plan.items
+        : plan.items.filter(i => i.day === state.activeDay);
+
+      const dayDone = filtered.filter(i => i.done).reduce((s, i) => s + i.effective, 0);
+      const dayRem = filtered.filter(i => !i.done).reduce((s, i) => s + i.dynamicTarget, 0);
+
+      document.getElementById("dayBanner").innerHTML = `
+        <div><strong>${state.activeDay === "Tutti" ? "Settimana Completa" : state.activeDay}</strong> (${filtered.length} visite)</div>
+        <div>Incassato: <strong class="text-green">${fmt(dayDone)}</strong> • Da fare: <strong class="text-amber">${fmt(dayRem)}</strong></div>
+      `;
+
+      const listEl = document.getElementById("clientList");
+      listEl.innerHTML = "";
+
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "client-card" + (item.done ? " done" : "");
+
+        const badgeClass = item.isExtra ? "badge badge-EXTRA" : `badge badge-${item.tier}`;
+        const badgeText = item.isExtra ? "EXTRA" : item.tier;
+
+        let metaHtml = `${item.day} • Min: ${item.min} € • Piano base: ${item.target} €`;
+        if (!item.done) {
+          const diff = item.dynamicTarget - item.target;
+          const diffStr = diff > 0.01 ? ` (+${diff.toFixed(2)} €)` : (diff < -0.01 ? ` (${diff.toFixed(2)} €)` : "");
+          metaHtml += ` • <span class="dyn-tag ${diff <= 0 ? 'ok' : ''}">Obiettivo Adeguato: ${fmt(item.dynamicTarget)}${diffStr}</span>`;
+        } else {
+          metaHtml += ` • <span class="dyn-tag ok">Registrato: ${fmt(item.effective)}</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="${badgeClass}">${badgeText}</div>
+          <div>
+            <div class="c-name">${item.name}</div>
+            <div class="c-meta">${metaHtml}</div>
+          </div>
+          <div class="c-actions">
+            <input type="number" class="amt-input" step="0.01" min="0"
+              placeholder="${item.dynamicTarget.toFixed(2)}"
+              value="${item.done ? item.effective : ''}"
+              onchange="updateAmount(${item.id}, ${item.isExtra}, this.value)" />
+            ${item.isExtra
+              ? `<button class="del-extra" title="Elimina" onclick="removeExtra(${item.id})">✕</button>`
+              : `<button class="check-btn" title="Segna visitato" onclick="toggleDone(${item.id}, ${item.dynamicTarget})">✓</button>`
+            }
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function updateAmount(id, isExtra, val) {
+      const num = parseFloat(val);
+      if (isExtra) {
+        const ex = state.extras.find(e => e.id === id);
+        if (ex) ex.actual = isNaN(num) ? 0 : num;
+      } else {
+        if (val === "" || isNaN(num)) {
+          delete state.records[id];
+        } else {
+          state.records[id] = { done: true, actual: num };
+        }
+      }
+      saveState();
+      render();
+    }
+
+    function toggleDone(id, suggested) {
+      const curr = state.records[id];
+      if (curr && curr.done) {
+        delete state.records[id];
+      } else {
+        state.records[id] = { done: true, actual: suggested };
+      }
+      saveState();
+      render();
+    }
+
+    function addExtra() {
+      const day = document.getElementById("exDay").value;
+      const name = document.getElementById("exName").value.trim() || "Cliente Extra";
+      const tier = document.getElementById("exTier").value;
+      const minMap = { A: 100, B: 50, C: 25 };
+      const rawAmt = parseFloat(document.getElementById("exAmt").value);
+      const actual = isNaN(rawAmt) ? minMap[tier] : rawAmt;
+
+      state.extras.push({
+        id: Date.now(),
+        day,
+        tier,
+        name,
+        min: minMap[tier],
+        target: minMap[tier],
+        actual
+      });
+
+      document.getElementById("exName").value = "";
+      document.getElementById("exAmt").value = "";
+      saveState();
+      render();
+    }
+
+    function removeExtra(id) {
+      state.extras = state.extras.filter(e => e.id !== id);
+      saveState();
+      render();
+    }
+
+    function resetAll() {
+      if (confirm("Vuoi azzerare tutti i fatturati inseriti e le visite extra?")) {
+        state.records = {};
+        state.extras = [];
+        saveState();
+        render();
+      }
+    }
+
+    function exportCSV() {
+      const plan = computeDynamicPlan();
+      let csv = "Giorno;Cliente;Fascia;Tipo;Minimo;Target_Base;Target_Adeguato_o_Reale;Stato\n";
+      plan.items.forEach(i => {
+        csv += `${i.day};${i.name};${i.tier};${i.isExtra ? 'Extra' : 'Giro'};${i.min};${i.target};${i.effective.toFixed(2).replace('.', ',')};${i.done ? 'Chiuso' : 'Da visitare'}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "chiusura_novembre_64_clienti.csv";
+      a.click();
+    }
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
